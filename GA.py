@@ -43,40 +43,13 @@ def dec2binary(n):
 	return ('{:08.4f}'.format(bi))
 
 def bin2dec(n):
-    a = Decimal(n)
-    a_split = (int(a // 1), a % 1)
-    i = genetic_code[str(a_split[0])]
-    f = genetic_code[str('{:05.4f}'.format(a_split[1]).split('.')[1])]
-    r = float(i) + float(f)
-    return r
-
-genetic_code = {
-    '0': '0',
-    '1': '1',
-    '10': '2',
-    '11': '3',
-    '100': '4',
-    '101': '5',
-    '110': '6',
-    '111': '7',
-    '0000': '0.0',
-    '0001': '0.5',
-    '0010': '0.25',
-    '0011': '0.75',
-    '0100': '0.125',
-    '0101': '0.625',
-    '0110': '0.375',
-    '0111': '0.875',
-    '1000': '0.062',
-    '1001': '0.562',
-    '1010': '0.312',
-    '1011': '0.812',
-    '1100': '0.187',
-    '1101': '0.687',
-    '1110': '0.437',
-    '1111': '0.937',
-
-}
+    i=n.split('.')[0]
+    i=[int(x) for x in i]
+    i=np.dot(np.power(np.multiply(np.ones((len(i))),2),np.flip(np.arange(0,len(i),1),axis=0)),i)
+    f=n.split('.')[1]
+    f=[int(x) for x in f]
+    f=np.dot(np.power(np.multiply(np.ones((len(f))),2),np.arange(-1,-(len(f)+1),-1)),f)
+    return i+f
 
 def dochoies(p, q):
     choices = {chromosome: fitness for chromosome, fitness in zip(p, q)}
@@ -139,16 +112,16 @@ def generatenewpopulation(newparents,bin,pm):
         newpop = np.append(newpop, [ch2,ch1])
     newpop = np.append(newpop, m[:_])
 
-    return(newpop.flatten('C')[:8])
+    return(newpop.flatten('C')[:len(newparents)])
 
 
 
 def main():
-	solution = [0.500, 1.875, 2.125, 4.875, 5.500, 6.875, 2.500, 3.125]
+	solution = [0.500, 1.875, 2.125, 4.875, 5.500, 6.875, 6.5]
 	pc = 1
 	pm = 0.125
 	e = 0.001
-	itr = 100
+	itr = 200
 	
 	df = pd.DataFrame(data=None,columns=['ValueOfX', 'Fitness', 'RouletWheelPopulation','NewPopulation'], index=np.arange(0,len(solution),1))
 	
@@ -164,9 +137,10 @@ def main():
 		df['NewPopulation'] = generatenewpopulation(df['RouletWheelPopulation'],InitialPopulation,pm)
 		solution = df['NewPopulation']
 
-		# print(df)
 
 	print("Chossen Solution is : {}".format(df['ValueOfX'][df['Fitness'].idxmax()]))
+	# print(df)
+
 
 
 	
